@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.dudes.google_calendar_helper.telegram.BotApiMethodController;
+import ru.dudes.google_calendar_helper.telegram.controllers.Controllers;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Component
 public class GoogleCalendarBot extends TelegramLongPollingBot {
@@ -35,20 +37,18 @@ public class GoogleCalendarBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()) {
-            Message message = update.getMessage();
-            SendMessage response = new SendMessage();
-            Long chatId = message.getChatId();
-            response.setChatId(String.valueOf(chatId));
-            String text = message.getText();
-            response.setText(text);
+        BotApiMethodController controller = Controllers.getController(update);
+        List<BotApiMethod> methods = controller.process(update);
+        methods.forEach(method -> {
             try {
-                execute(response);
-                logger.info("Sent message \"{}\" to {}", text, chatId);
+                execute(method);
+                logger.info("Sent message to {}", update.getMessage().getChatId());
             } catch (TelegramApiException e) {
-                logger.error("Failed to send message \"{}\" to {} due to error: {}", text, chatId, e.getMessage());
+                e.printStackTrace();
+                logger.error("Failed to send message to {} due to error: {}", update.getMessage().getChatId(), e.getMessage());
+
             }
-        }
+        });
     }
 
     @PostConstruct

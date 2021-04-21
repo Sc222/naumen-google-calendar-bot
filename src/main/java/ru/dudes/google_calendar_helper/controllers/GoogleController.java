@@ -1,5 +1,8 @@
 package ru.dudes.google_calendar_helper.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import ru.dudes.google_calendar_helper.entities.CalendarDto;
 import ru.dudes.google_calendar_helper.entities.EventDto;
 import ru.dudes.google_calendar_helper.services.GoogleService;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import ru.dudes.google_calendar_helper.telegram.BotApiMethodContainer;
 
 import java.util.List;
 import java.util.Map;
@@ -23,9 +27,9 @@ import java.util.Map;
 @RestController
 public class GoogleController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BotApiMethodContainer.class);
     private final GoogleService googleService;
     private final OAuth2AuthorizedClientService authorizedClientService;
-
 
     @Autowired
     public GoogleController(OAuth2AuthorizedClientService authorizedClientService, GoogleService googleService
@@ -46,9 +50,9 @@ public class GoogleController {
         //USER_NAME: userInfo.get("name");
         //USER_EMAIL: userInfo.get("email");
         //TOKEN_VALUE: client.getAccessToken().getTokenValue();
-        System.out.println("ACCESS_TOKEN VALUE: " + client.getAccessToken().getTokenValue());
+        logger.info("ACCESS_TOKEN VALUE: " + client.getAccessToken().getTokenValue());
         //System.out.println("REFRESH_TOKEN VALUE: " + client.getRefreshToken().getTokenValue());
-        System.out.println(userInfo.toString());
+        logger.info(userInfo.toString());
         return "Successfully logged in with user: " + userInfo.get("name");
     }
 
