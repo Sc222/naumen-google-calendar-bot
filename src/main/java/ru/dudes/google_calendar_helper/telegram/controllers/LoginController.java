@@ -10,7 +10,7 @@ import ru.dudes.google_calendar_helper.telegram.BotRequestMapping;
 @BotController
 public class LoginController {
 
-    @Value("${homepage}")
+    @Value("${loginURL}")
     private String homepage;
 
     @BotRequestMapping(value = "/login")
