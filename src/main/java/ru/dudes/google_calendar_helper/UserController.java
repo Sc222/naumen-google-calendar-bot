@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.Map;
 
 
-@RestController
+//@RestController
 public class UserController {
 
-    @GetMapping("/user")
-    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+    //@GetMapping("/user")
+    /*public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
         //todo можно обращаться к principal и складывать в бд
         return Collections.singletonMap("name", principal.getAttribute("name"));
-    }
+    }*/
 }
