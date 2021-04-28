@@ -14,12 +14,12 @@ public class HelpController {
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
 
-        var responseBuilder = new StringBuilder("Type /help %command to get detailed info.\nAvailable commands:")
-                .append("Account")
+        var responseBuilder = new StringBuilder("Type /help %command to get detailed info.\n\nAvailable commands:")
+                .append("\n\nAccount:")
                 .append("\n/login - login into Google to enable bot integration")
                 //.append("\n/logout - logout from Google to disable bot integration")
                 .append("\n/status - shows Google login status")
-                .append("Calendar access")
+                .append("\n\nCalendar access:")
                 .append("\n/calendars - list all calendars")
                 .append("\n/events %calendarId - list all calendar events ")
                 //.append("\n/refresh - refresh Google login token")
@@ -27,9 +27,6 @@ public class HelpController {
         //todo /help COMMAND_NAME
         //todo map commands from ControllerSingleton
         response.setText(responseBuilder.toString());
-
-
-
         return response;
     }
 }
