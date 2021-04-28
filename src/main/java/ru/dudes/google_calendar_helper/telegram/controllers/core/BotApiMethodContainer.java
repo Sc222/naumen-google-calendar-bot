@@ -1,4 +1,4 @@
-package ru.dudes.google_calendar_helper.telegram;
+package ru.dudes.google_calendar_helper.telegram.controllers.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

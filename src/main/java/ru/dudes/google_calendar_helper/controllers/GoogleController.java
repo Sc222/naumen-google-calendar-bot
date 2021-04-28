@@ -2,7 +2,6 @@ package ru.dudes.google_calendar_helper.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
 import ru.dudes.google_calendar_helper.entities.CalendarDto;
 import ru.dudes.google_calendar_helper.entities.EventDto;
 import ru.dudes.google_calendar_helper.services.GoogleService;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import ru.dudes.google_calendar_helper.telegram.BotApiMethodContainer;
+import ru.dudes.google_calendar_helper.telegram.controllers.core.BotApiMethodContainer;
 
 import java.util.List;
 import java.util.Map;
@@ -40,8 +38,8 @@ public class GoogleController {
 
     @GetMapping("/loginSuccess")
     public String getLoginInfo(OAuth2AuthenticationToken authentication) throws Exception {
-        OAuth2AuthorizedClient client = loadClientInfo(authentication);
-        Map userInfo = getUserInfo(client);
+        var client = loadClientInfo(authentication);
+        var userInfo = getUserInfo(client);
 
         //TODO STORE USER DETAILS IN DATABASE
 
@@ -60,22 +58,21 @@ public class GoogleController {
     public List<EventDto> getEvents(OAuth2AuthenticationToken authentication,
                                     @RequestParam(value = "calendarId", required = false, defaultValue = "primary")
                                             String calendarId) throws Exception {
-        OAuth2AuthorizedClient client = loadClientInfo(authentication);
-        String tokenValue = client.getAccessToken().getTokenValue();
+        var client = loadClientInfo(authentication);
+        var tokenValue = client.getAccessToken().getTokenValue();
         return googleService.getEvents(tokenValue, calendarId);
     }
 
     @GetMapping("/getCalendars")
     public List<CalendarDto> getCalendars(OAuth2AuthenticationToken authentication) throws Exception {
-        OAuth2AuthorizedClient client = loadClientInfo(authentication);
-
+        var client = loadClientInfo(authentication);
         return googleService.getCalendars(client.getAccessToken().getTokenValue());
     }
 
 
     private OAuth2AuthorizedClient loadClientInfo(OAuth2AuthenticationToken authentication) throws Exception {
         try {
-            OAuth2AuthorizedClient client = authorizedClientService
+            var client = authorizedClientService
                     .loadAuthorizedClient(
                             authentication.getAuthorizedClientRegistrationId(),
                             authentication.getName());
@@ -86,17 +83,17 @@ public class GoogleController {
     }
 
     private Map getUserInfo(OAuth2AuthorizedClient client) throws Exception {
-        String userInfoEndpointUri = client.getClientRegistration()
+        var userInfoEndpointUri = client.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUri();
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
+            var restTemplate = new RestTemplate();
+            var headers = new HttpHeaders();
             headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken()
                     .getTokenValue());
-            HttpEntity entity = new HttpEntity("", headers);
-            ResponseEntity<Map> response = restTemplate
+            var entity = new HttpEntity("", headers);
+            var response = restTemplate
                     .exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
-            Map userAttributes = response.getBody();
+            var userAttributes = response.getBody();
             return userAttributes;
         } catch (Exception e) {
             throw new Exception(e.getMessage());

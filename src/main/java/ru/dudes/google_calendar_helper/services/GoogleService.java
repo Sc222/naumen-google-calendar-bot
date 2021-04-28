@@ -10,10 +10,10 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Events;
-import ru.dudes.google_calendar_helper.entities.CalendarDto;
-import ru.dudes.google_calendar_helper.entities.EventDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import ru.dudes.google_calendar_helper.entities.CalendarDto;
+import ru.dudes.google_calendar_helper.entities.EventDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,14 +25,13 @@ import java.util.List;
 public class GoogleService {
 
     private static final String APPLICATION_NAME = "Movie-Nights";
-    private static HttpTransport httpTransport = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
+    private static HttpTransport httpTransport = new NetHttpTransport();
     private final DateTime minDate = new DateTime(new Date());
 
     public List<EventDto> getEvents(String tokenValue, String calendarId) {
-        GoogleCredential credential = new GoogleCredential().setAccessToken(tokenValue);
-        Calendar calendar =
+        var credential = new GoogleCredential().setAccessToken(tokenValue);
+        var calendar =
                 new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
                         .setApplicationName(APPLICATION_NAME)
                         .build();
@@ -47,7 +46,7 @@ public class GoogleService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        List<EventDto> eventDtos = new ArrayList<>();
+        var eventDtos = new ArrayList<EventDto>();
         events.getItems().forEach(e -> {
             EventDto eventDto = new EventDto();
             BeanUtils.copyProperties(e, eventDto);
@@ -58,24 +57,22 @@ public class GoogleService {
     }
 
     public List<CalendarDto> getCalendars(String tokenValue) throws IOException {
-        GoogleCredential credential = new GoogleCredential().setAccessToken(tokenValue);
-        Calendar service = new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
+        var credential = new GoogleCredential().setAccessToken(tokenValue);
+        var service = new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName("applicationName").build();
         CalendarList calendarList;
-        List<CalendarDto> calendarDtos = new ArrayList<>();
+        var calendarDtos = new ArrayList<CalendarDto>();
         String pageToken = null;
         do {
             calendarList = service.calendarList().list().setPageToken(pageToken).execute();
-            List<CalendarListEntry> items = calendarList.getItems();
-
+            var items = calendarList.getItems();
             for (CalendarListEntry calendarListEntry : items) {
-                CalendarDto calendarDto = new CalendarDto();
+                var calendarDto = new CalendarDto();
                 BeanUtils.copyProperties(calendarListEntry, calendarDto);
                 calendarDtos.add(calendarDto);
             }
             pageToken = calendarList.getNextPageToken();
         } while (pageToken != null);
-
         return calendarDtos;
     }
 

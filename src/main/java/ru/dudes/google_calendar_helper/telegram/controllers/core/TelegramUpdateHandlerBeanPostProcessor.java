@@ -1,6 +1,5 @@
-package ru.dudes.google_calendar_helper.telegram;
+package ru.dudes.google_calendar_helper.telegram.controllers.core;
 
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -41,15 +40,11 @@ public class TelegramUpdateHandlerBeanPostProcessor implements BeanPostProcessor
 
     private void generateController(Object bean, Method method) {
         logger.info("GENERATE CONTROLLER");
-
-        BotController botController = bean.getClass().getAnnotation(BotController.class);
-        BotRequestMapping botRequestMapping = method.getAnnotation(BotRequestMapping.class);
-
-        String path = (botController.value().length != 0 ? botController.value()[0] : "")
+        var botController = bean.getClass().getAnnotation(BotController.class);
+        var botRequestMapping = method.getAnnotation(BotRequestMapping.class);
+        var path = (botController.value().length != 0 ? botController.value()[0] : "")
                 + (botRequestMapping.value().length != 0 ? botRequestMapping.value()[0] : "");
-
         BotApiMethodController controller = null;
-
         switch (botRequestMapping.method()[0]){
             case MSG:
                 controller = createControllerUpdate2ApiMethod(bean, method);
@@ -60,7 +55,6 @@ public class TelegramUpdateHandlerBeanPostProcessor implements BeanPostProcessor
             default:
                 break;
         }
-
         if (controller != null) {
             container.addBotController(path, controller);
         }

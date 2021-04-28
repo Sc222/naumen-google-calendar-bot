@@ -1,15 +1,13 @@
-package ru.dudes.google_calendar_helper.telegram;
-
-import org.springframework.stereotype.Component;
+package ru.dudes.google_calendar_helper.telegram.controllers.core;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Component
-public @interface BotController {
+public @interface BotRequestMapping {
     String[] value() default {};
+    BotRequestMethod[] method() default {BotRequestMethod.MSG};
 }

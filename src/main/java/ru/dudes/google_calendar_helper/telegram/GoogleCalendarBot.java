@@ -1,18 +1,15 @@
-package ru.dudes.google_calendar_helper;
+package ru.dudes.google_calendar_helper.telegram;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.dudes.google_calendar_helper.telegram.BotApiMethodController;
-import ru.dudes.google_calendar_helper.telegram.controllers.Controllers;
+import ru.dudes.google_calendar_helper.telegram.controllers.core.ControllersSingleton;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Component
 public class GoogleCalendarBot extends TelegramLongPollingBot {
@@ -37,8 +34,8 @@ public class GoogleCalendarBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        BotApiMethodController controller = Controllers.getController(update);
-        List<BotApiMethod> methods = controller.process(update);
+        var controller = ControllersSingleton.getController(update);
+        var methods = controller.process(update);
         methods.forEach(method -> {
             try {
                 execute(method);
