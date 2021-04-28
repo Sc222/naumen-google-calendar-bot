@@ -11,13 +11,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        //http.authorizeRequests()
+        //        .anyRequest().authenticated();
+        http.authorizeRequests(a -> a
+                .antMatchers("/*", "/error","/h2-console*", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .defaultSuccessUrl("/loginSuccess");
+        );
 
         http.oauth2Login()
+                .defaultSuccessUrl("/loginSuccess")
                 .authorizationEndpoint()
                 .authorizationRequestResolver(new AuthorizationRequestResolverWithChatId(getApplicationContext().getBean(ClientRegistrationRepository.class)));
     }

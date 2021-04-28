@@ -1,4 +1,4 @@
-package ru.dudes.google_calendar_helper.entities;
+package ru.dudes.google_calendar_helper.google_calendar.entities;
 
 import lombok.Data;
 

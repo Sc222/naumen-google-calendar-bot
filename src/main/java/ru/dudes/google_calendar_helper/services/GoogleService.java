@@ -12,8 +12,8 @@ import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Events;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import ru.dudes.google_calendar_helper.entities.CalendarDto;
-import ru.dudes.google_calendar_helper.entities.EventDto;
+import ru.dudes.google_calendar_helper.google_calendar.entities.CalendarDto;
+import ru.dudes.google_calendar_helper.google_calendar.entities.EventDto;
 
 import java.io.IOException;
 import java.util.ArrayList;

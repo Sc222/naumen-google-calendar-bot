@@ -10,21 +10,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dudes.google_calendar_helper.auth2.Auth2InfoHelper;
+import ru.dudes.google_calendar_helper.db.entities.User;
+import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.telegram.GoogleCalendarBot;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotApiMethodContainer;
 
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 @RestController
 public class LoginSuccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(BotApiMethodContainer.class);
+    private final UserRepository userRepository;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final GoogleCalendarBot telegramBot;
 
     @Autowired
-    public LoginSuccessController(OAuth2AuthorizedClientService authorizedClientService, GoogleCalendarBot telegramBot) {
+    public LoginSuccessController(UserRepository userRepository, OAuth2AuthorizedClientService authorizedClientService, GoogleCalendarBot telegramBot) {
+        this.userRepository=userRepository;
         this.authorizedClientService = authorizedClientService;
         this.telegramBot = telegramBot;
     }
@@ -52,6 +55,12 @@ public class LoginSuccessController {
         //System.out.println("REFRESH_TOKEN VALUE: " + client.getRefreshToken().getTokenValue());
         logger.info(userInfo.toString());
 
+        //client.getRefreshToken().getTokenValue()
+
+        var user = new User(tgChatId,client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
+
+       // userRepository.save(new User())
+        userRepository.save(user);
 
         //send telegram message
         SendMessage sendMessage = new SendMessage();
