@@ -2,9 +2,6 @@ package ru.dudes.google_calendar_helper.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.dudes.google_calendar_helper.entities.CalendarDto;
-import ru.dudes.google_calendar_helper.entities.EventDto;
-import ru.dudes.google_calendar_helper.services.GoogleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,35 +10,39 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import ru.dudes.google_calendar_helper.auth2.ClientInfoHelper;
+import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotApiMethodContainer;
 
-import java.util.List;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
-
 @RestController
-public class GoogleController {
+public class LoginSuccessController {
 
     private static final Logger logger = LoggerFactory.getLogger(BotApiMethodContainer.class);
-    private final GoogleService googleService;
     private final OAuth2AuthorizedClientService authorizedClientService;
 
     @Autowired
-    public GoogleController(OAuth2AuthorizedClientService authorizedClientService, GoogleService googleService
-    ) {
+    public LoginSuccessController(OAuth2AuthorizedClientService authorizedClientService, GoogleService googleService) {
         this.authorizedClientService = authorizedClientService;
-        this.googleService = googleService;
     }
 
     @GetMapping("/loginSuccess")
-    public String getLoginInfo(OAuth2AuthenticationToken authentication) throws Exception {
-        var client = loadClientInfo(authentication);
+    public String getLoginInfo(HttpSession session, OAuth2AuthenticationToken authentication) throws Exception {
+        var client = ClientInfoHelper.loadClientInfo(authentication, authorizedClientService);
         var userInfo = getUserInfo(client);
 
         //TODO STORE USER DETAILS IN DATABASE
+
+        //client.getRefreshToken()
+        Object a = authentication.getDetails();
+
+        String tgChatId = (String) session.getAttribute("chatId");
+        logger.info("GET FROM SESSION: " + tgChatId);
+
 
         //OPTIONAL SAVE USER DETAILS SOMEWHERE HERE
         //EXAMPLE VALUES:
@@ -54,33 +55,6 @@ public class GoogleController {
         return "Successfully logged in with user: " + userInfo.get("name");
     }
 
-    @GetMapping("/getEvents")
-    public List<EventDto> getEvents(OAuth2AuthenticationToken authentication,
-                                    @RequestParam(value = "calendarId", required = false, defaultValue = "primary")
-                                            String calendarId) throws Exception {
-        var client = loadClientInfo(authentication);
-        var tokenValue = client.getAccessToken().getTokenValue();
-        return googleService.getEvents(tokenValue, calendarId);
-    }
-
-    @GetMapping("/getCalendars")
-    public List<CalendarDto> getCalendars(OAuth2AuthenticationToken authentication) throws Exception {
-        var client = loadClientInfo(authentication);
-        return googleService.getCalendars(client.getAccessToken().getTokenValue());
-    }
-
-
-    private OAuth2AuthorizedClient loadClientInfo(OAuth2AuthenticationToken authentication) throws Exception {
-        try {
-            var client = authorizedClientService
-                    .loadAuthorizedClient(
-                            authentication.getAuthorizedClientRegistrationId(),
-                            authentication.getName());
-            return client;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
-    }
 
     private Map getUserInfo(OAuth2AuthorizedClient client) throws Exception {
         var userInfoEndpointUri = client.getClientRegistration()

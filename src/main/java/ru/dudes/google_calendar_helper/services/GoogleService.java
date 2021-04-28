@@ -50,6 +50,8 @@ public class GoogleService {
         events.getItems().forEach(e -> {
             EventDto eventDto = new EventDto();
             BeanUtils.copyProperties(e, eventDto);
+
+            //todo null if not logged in
             eventDto.setStartTime(e.getStart().getDateTime().toString());
             eventDtos.add(eventDto);
         });
