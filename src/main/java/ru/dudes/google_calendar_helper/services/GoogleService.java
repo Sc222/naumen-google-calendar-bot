@@ -12,8 +12,8 @@ import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Events;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import ru.dudes.google_calendar_helper.google_calendar.entities.CalendarDto;
-import ru.dudes.google_calendar_helper.google_calendar.entities.EventDto;
+import ru.dudes.google_calendar_helper.services.google_entities.CalendarDto;
+import ru.dudes.google_calendar_helper.services.google_entities.EventDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ public class GoogleService {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static HttpTransport httpTransport = new NetHttpTransport();
     private final DateTime minDate = new DateTime(new Date());
+
+    //TODO UPDATE CALENDAR AND SOMETHING ELSE HERE
 
     public List<EventDto> getEvents(String tokenValue, String calendarId) {
         var credential = new GoogleCredential().setAccessToken(tokenValue);
@@ -61,7 +63,7 @@ public class GoogleService {
     public List<CalendarDto> getCalendars(String tokenValue) throws IOException {
         var credential = new GoogleCredential().setAccessToken(tokenValue);
         var service = new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
-                .setApplicationName("applicationName").build();
+                .setApplicationName(APPLICATION_NAME).build();
         CalendarList calendarList;
         var calendarDtos = new ArrayList<CalendarDto>();
         String pageToken = null;

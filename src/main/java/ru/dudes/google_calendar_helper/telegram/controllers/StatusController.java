@@ -20,15 +20,13 @@ public class StatusController {
     @BotRequestMapping(value = "/status")
     public SendMessage processStatusCommand(Update update) {
         var message = update.getMessage();
-
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
-
 
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
 
         String responseText;
-        if(user==null)
+        if(user==null)  //todo move to helper method
             responseText="You are not logged in.\nPlease type /login to login or service will not work";
         else //todo more info about logged in user (message, etc)
             responseText= String.format("Logged in as %s!\nChat: %s", user.getUserName(),user.getChatId());
