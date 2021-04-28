@@ -13,20 +13,22 @@ public class LoginController {
     private String homepage;
 
     @BotRequestMapping(value = "/login")
-    public SendMessage login(Update update) {
+    public SendMessage processLoginCommand(Update update) {
         var message = update.getMessage();
         var values = update.getMessage().getText().split(" ");
         var response = new SendMessage();
+
         response.setChatId(String.valueOf(message.getChatId()));
-        if(values.length!=2)//todo && validate email
-            response.setText("Wrong command format!\nplease type '/login %mail'");
+        if(values.length!=1)
+            response.setText("Wrong command format!\nPlease type /login without parameters");
         else {
             response.enableMarkdownV2(true);
-            String mail = values[1];
-            //TODO ADD MAIL TO DATABASE HERE
 
-            //localhost links don't highlight
-            response.setText(String.format("Login [here](%s) and then return to bot\nlink: %s\nmail:%s", homepage,homepage,mail));
+            var loginUrl = String.format("%s?chatId\\=%d", homepage, update.getMessage().getChatId());
+
+            //!!!localhost links don't highlight
+            //todo: Please follow the link below to login
+            response.setText(loginUrl);
         }
         return response;
     }

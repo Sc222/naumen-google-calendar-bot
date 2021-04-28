@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.ControllersSingleton;
@@ -43,9 +44,12 @@ public class GoogleCalendarBot extends TelegramLongPollingBot {
             } catch (TelegramApiException e) {
                 e.printStackTrace();
                 logger.error("Failed to send message to {} due to error: {}", update.getMessage().getChatId(), e.getMessage());
-
             }
         });
+    }
+
+    public void sendMessageFromController(SendMessage sendMessage) throws TelegramApiException {
+        execute(sendMessage);
     }
 
     @PostConstruct

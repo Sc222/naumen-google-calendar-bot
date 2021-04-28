@@ -18,7 +18,7 @@ public class AuthorizationRequestResolverWithChatId implements OAuth2Authorizati
 
     @Override
     public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
-        OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request);
+        var authorizationRequest = defaultResolver.resolve(request);
         if (authorizationRequest != null)
             authorizationRequest = customizeAuthorizationRequest(authorizationRequest, request);
         return authorizationRequest;
@@ -26,7 +26,7 @@ public class AuthorizationRequestResolverWithChatId implements OAuth2Authorizati
 
     @Override
     public OAuth2AuthorizationRequest resolve(HttpServletRequest request, String clientRegistrationId) {
-        OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request, clientRegistrationId);
+        var authorizationRequest = defaultResolver.resolve(request, clientRegistrationId);
         if (authorizationRequest != null)
             authorizationRequest = customizeAuthorizationRequest(authorizationRequest, request);
         return authorizationRequest;
@@ -34,8 +34,9 @@ public class AuthorizationRequestResolverWithChatId implements OAuth2Authorizati
 
     private OAuth2AuthorizationRequest customizeAuthorizationRequest(
             OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request) {
+        var chatId = request.getParameter("chatId");
         var httpSession = request.getSession();
-        httpSession.setAttribute("chatId", request.getParameter("chatId"));
+        httpSession.setAttribute("chatId", chatId != null ? chatId : "");
         return OAuth2AuthorizationRequest.from(authorizationRequest)
                 .build();
     }

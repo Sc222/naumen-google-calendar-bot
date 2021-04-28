@@ -13,8 +13,7 @@ public class StartController {
         var message = update.getMessage();
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
-        response.setChatId(String.valueOf(update.getMessage().getChatId()));
-        response.setText("Google Calendar bot start info");
+        response.setText("This bot that can interact with your Google Calendar.\nType /login to enable interaction or /help for list all commands.");
         return response;
     }
 }

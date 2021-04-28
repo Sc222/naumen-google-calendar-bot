@@ -6,14 +6,14 @@ import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
 
 @BotController
-public class UnknownController {
+public class StatusController {
 
-    @BotRequestMapping(value = "")
-    public SendMessage processUnknownCommand(Update update) {
+    @BotRequestMapping(value = "/status")
+    public SendMessage processStatusCommand(Update update) {
         var message = update.getMessage();
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
-        response.setText("Unknown command!\nType /help to see list of available commands");
+        response.setText("A");
         return response;
     }
 }
