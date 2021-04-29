@@ -57,10 +57,15 @@ public class LoginSuccessController {
 
         //client.getRefreshToken().getTokenValue()
 
-        var user = new User(tgChatId,client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
+        var newUser = new User(tgChatId, client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
 
-       // userRepository.save(new User())
-        userRepository.save(user);
+        var dbUser = userRepository.findByChatId(tgChatId);
+
+        if (dbUser != null) { // perform save on user from db (BECAUSE IT SHOULD CONTAIN ID)
+            dbUser.updateWithValues(newUser.getChatId(), newUser.getToken(), newUser.getUserName());
+            userRepository.save(dbUser);
+        } else
+            userRepository.save(newUser);
 
         //send telegram message
         SendMessage sendMessage = new SendMessage();

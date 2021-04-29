@@ -1,6 +1,5 @@
 package ru.dudes.google_calendar_helper.db.entities;
 
-import lombok.Data;
 import lombok.Getter;
 import nonapi.io.github.classgraph.json.Id;
 
@@ -43,9 +42,16 @@ public class User {
     @Getter
     private String lastName;*/
 
-    protected User() {}
+    protected User() {
+    }
 
     public User(String chatId, String token, String userName) {
+        this.chatId = chatId;
+        this.token = token;
+        this.userName = userName;
+    }
+
+    public void updateWithValues(String chatId, String token, String userName) {
         this.chatId = chatId;
         this.token = token;
         this.userName = userName;

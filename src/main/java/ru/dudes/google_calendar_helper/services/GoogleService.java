@@ -26,11 +26,13 @@ public class GoogleService {
 
     private static final String APPLICATION_NAME = "Movie-Nights";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static HttpTransport httpTransport = new NetHttpTransport();
+    private static final HttpTransport httpTransport = new NetHttpTransport();
     private final DateTime minDate = new DateTime(new Date());
 
     //TODO UPDATE CALENDAR AND SOMETHING ELSE HERE
 
+
+    //TODO GET EVENTS WORKS BAD
     public List<EventDto> getEvents(String tokenValue, String calendarId) {
         var credential = new GoogleCredential().setAccessToken(tokenValue);
         var calendar =
@@ -48,6 +50,10 @@ public class GoogleService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (events == null)
+            return null;
+
         var eventDtos = new ArrayList<EventDto>();
         events.getItems().forEach(e -> {
             EventDto eventDto = new EventDto();

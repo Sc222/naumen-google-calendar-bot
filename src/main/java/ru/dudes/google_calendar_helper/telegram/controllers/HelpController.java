@@ -17,7 +17,7 @@ public class HelpController {
         var responseBuilder = new StringBuilder("Type /help %command to get detailed info.\n\nAvailable commands:")
                 .append("\n\nAccount:")
                 .append("\n/login - login into Google to enable bot integration")
-                //.append("\n/logout - logout from Google to disable bot integration")
+                .append("\n/logout - logout from Google to disable bot integration")
                 .append("\n/status - shows Google login status")
                 .append("\n\nCalendar access:")
                 .append("\n/calendars - list all calendars")
