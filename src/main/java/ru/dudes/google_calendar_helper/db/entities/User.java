@@ -24,6 +24,12 @@ public class User {
     private Long id;
 
     @Getter
+    private String oAuthRegistrationId;
+
+    @Getter
+    private String oAuthName;
+
+    @Getter
     private String chatId;
 
     @Getter
@@ -45,10 +51,12 @@ public class User {
     protected User() {
     }
 
-    public User(String chatId, String token, String userName) {
+    public User(String oAuthRegistrationId,String oAuthName ,String chatId, String token, String userName) {
+        this.oAuthRegistrationId = oAuthRegistrationId;
         this.chatId = chatId;
         this.token = token;
         this.userName = userName;
+        this.oAuthName = oAuthName;
     }
 
     public void updateWithValues(String chatId, String token, String userName) {

@@ -57,8 +57,7 @@ public class LoginSuccessController {
 
         //client.getRefreshToken().getTokenValue()
 
-        var newUser = new User(tgChatId, client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
-
+        var newUser = new User(authentication.getAuthorizedClientRegistrationId(),authentication.getName() ,tgChatId ,client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
         var dbUser = userRepository.findByChatId(tgChatId);
 
         if (dbUser != null) { // perform save on user from db (BECAUSE IT SHOULD CONTAIN ID)
