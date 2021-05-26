@@ -13,8 +13,8 @@ public class StatusController {
     private final UserRepository userRepository;
 
     @Autowired
-    public StatusController(UserRepository userRepository){
-        this.userRepository=userRepository;
+    public StatusController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @BotRequestMapping(value = "/status")
@@ -22,15 +22,24 @@ public class StatusController {
         var message = update.getMessage();
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
+        
+        //todo use sendPhoto or markdown/html
+        //new SendPhoto().setPhoto("ллл");
 
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
-
-        String responseText;
-        if(user==null)  //todo move to helper method
-            responseText="You are not logged in.\nPlease type /login to login or service will not work";
-        else //todo more info about logged in user (message, etc)
-            responseText= String.format("Logged in as %s!\nChat: %s", user.getUserName(),user.getChatId());
-        response.setText(responseText);
+        if (user == null)
+            response.setText(
+                    "You are not logged in." +
+                            "\nPlease type /login to login or service will not work"
+            );
+        else {
+            response.setText(
+                    "Account information:" +
+                            "\nUsername: " + user.getUserName() +
+                            "\nEmail: " + user.getEmail() +
+                            "\n" + user.getImageUrl()
+            );
+        }
         return response;
     }
 }

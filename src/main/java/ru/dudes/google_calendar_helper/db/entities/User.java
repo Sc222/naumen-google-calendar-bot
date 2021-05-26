@@ -2,6 +2,7 @@ package ru.dudes.google_calendar_helper.db.entities;
 
 import lombok.Getter;
 import nonapi.io.github.classgraph.json.Id;
+import ru.dudes.google_calendar_helper.auth2.UserInfo;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,25 +39,33 @@ public class User {
     @Getter
     private String userName;
 
+    @Getter
+    private String email;
 
-    /*@Getter
+    @Getter
     private String imageUrl;
-
-    @Getter
-    private String firstName;
-
-    @Getter
-    private String lastName;*/
 
     protected User() {
     }
 
-    public User(String oAuthRegistrationId,String oAuthName ,String chatId, String token, String userName) {
+    public User(String oAuthRegistrationId, String oAuthName, String chatId, String token, String userName, String email, String imageUrl) {
         this.oAuthRegistrationId = oAuthRegistrationId;
+        this.oAuthName = oAuthName;
         this.chatId = chatId;
         this.token = token;
         this.userName = userName;
+        this.email = email;
+        this.imageUrl = imageUrl;
+    }
+
+    public User(String oAuthRegistrationId, String oAuthName, String chatId, String token, UserInfo userInfo) {
+        this.oAuthRegistrationId = oAuthRegistrationId;
         this.oAuthName = oAuthName;
+        this.chatId = chatId;
+        this.token = token;
+        this.userName = userInfo.getName();
+        this.email = userInfo.getEmail();
+        this.imageUrl = userInfo.getPicture();
     }
 
     public void updateWithValues(String chatId, String token, String userName) {

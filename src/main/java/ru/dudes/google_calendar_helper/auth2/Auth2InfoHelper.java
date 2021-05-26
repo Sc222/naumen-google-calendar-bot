@@ -8,8 +8,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-
 public class Auth2InfoHelper {
     public static OAuth2AuthorizedClient loadClientInfo(OAuth2AuthenticationToken authentication, OAuth2AuthorizedClientService authorizedClientService) {
         return authorizedClientService
@@ -18,7 +16,7 @@ public class Auth2InfoHelper {
                         authentication.getName());
     }
 
-    public static Map getUserInfo(OAuth2AuthorizedClient client) {
+    public static UserInfo getUserInfo(OAuth2AuthorizedClient client) {
         var userInfoEndpointUri = client.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUri();
 
@@ -28,7 +26,7 @@ public class Auth2InfoHelper {
                 .getTokenValue());
         var entity = new HttpEntity<String>("", headers);
         var response = restTemplate
-                .exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
+                .exchange(userInfoEndpointUri, HttpMethod.GET, entity, UserInfo.class);
         return response.getBody();
     }
 }

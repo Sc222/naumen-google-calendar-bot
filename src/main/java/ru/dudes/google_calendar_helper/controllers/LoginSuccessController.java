@@ -57,7 +57,12 @@ public class LoginSuccessController {
 
         //client.getRefreshToken().getTokenValue()
 
-        var newUser = new User(authentication.getAuthorizedClientRegistrationId(),authentication.getName() ,tgChatId ,client.getAccessToken().getTokenValue(), (String) userInfo.get("name"));
+        var newUser = new User(
+                authentication.getAuthorizedClientRegistrationId(),
+                authentication.getName(),
+                tgChatId,
+                client.getAccessToken().getTokenValue(),
+                userInfo);
         var dbUser = userRepository.findByChatId(tgChatId);
 
         if (dbUser != null) { // perform save on user from db (BECAUSE IT SHOULD CONTAIN ID)
@@ -69,13 +74,13 @@ public class LoginSuccessController {
         //send telegram message
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(tgChatId);
-        sendMessage.setText("Successfully logged in as: " + userInfo.get("name"));
+        sendMessage.setText("Successfully logged in as: " + userInfo.getName());
         try {
             telegramBot.sendMessageFromController(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
             logger.error("Can't send telegram message after success login");
         }
-        return "Successfully logged in with user: " + userInfo.get("name");
+        return "Successfully logged in with user: " + userInfo.getName();
     }
 }

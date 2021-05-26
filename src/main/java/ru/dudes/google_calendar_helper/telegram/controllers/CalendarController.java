@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
+import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.services.google_entities.CalendarDto;
 import ru.dudes.google_calendar_helper.services.google_entities.EventDto;
-import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
 
@@ -47,7 +47,7 @@ public class CalendarController {
 
             //todo  move to helper method
             if(calendars==null)
-                responseText="There was a error getting your calendars.\nTry /login or /refresh_token commands.";
+                responseText = "There was a error getting your calendars.\nTry /login command.";
             else{
                 responseText="Your calendars:\n";
                 StringJoiner calendarsJoiner = new StringJoiner("\n");
