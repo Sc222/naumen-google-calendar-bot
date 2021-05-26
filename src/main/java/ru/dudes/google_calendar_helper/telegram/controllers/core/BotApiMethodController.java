@@ -15,9 +15,9 @@ public abstract class BotApiMethodController {
 
     private static final Logger logger = LoggerFactory.getLogger(BotApiMethodContainer.class);
 
-    private Object bean;
-    private Method method;
-    private Process processUpdate;
+    private final Object bean;
+    private final Method method;
+    private final Process processUpdate;
 
     public BotApiMethodController(Object bean, Method method) {
         this.bean = bean;
@@ -25,10 +25,7 @@ public abstract class BotApiMethodController {
         processUpdate = typeListReturnDetect() ? this::processList : this::processSingle;
     }
 
-    public boolean successUpdatePredicate(Update update)
-    {
-        return true;
-    }
+    public abstract boolean successUpdatePredicate(Update update);
 
     public List<BotApiMethod> process(Update update) {
         if(!successUpdatePredicate(update)) return null;
@@ -45,12 +42,12 @@ public abstract class BotApiMethodController {
     }
 
     private List<BotApiMethod> processSingle(Update update) throws InvocationTargetException, IllegalAccessException {
-        BotApiMethod botApiMethod = (BotApiMethod) method.invoke(bean, update);
+        var botApiMethod = (BotApiMethod) method.invoke(bean, update);
         return botApiMethod != null ? Collections.singletonList(botApiMethod) : new ArrayList<>(0);
     }
 
     private List<BotApiMethod> processList(Update update) throws InvocationTargetException, IllegalAccessException {
-        List<BotApiMethod> botApiMethods = (List<BotApiMethod>) method.invoke(bean, update);
+        var botApiMethods = (List<BotApiMethod>) method.invoke(bean, update);
         return botApiMethods != null ? botApiMethods : new ArrayList<>(0);
     }
 

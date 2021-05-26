@@ -13,7 +13,6 @@ public class HelpController {
         var message = update.getMessage();
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
-
         var responseBuilder = new StringBuilder("Type /help %command to get detailed info.\n\nAvailable commands:")
                 .append("\n\nAccount:")
                 .append("\n/login - login into Google to enable bot integration")
@@ -22,10 +21,9 @@ public class HelpController {
                 .append("\n\nCalendar access:")
                 .append("\n/calendars - list all calendars")
                 .append("\n/events %calendarId - list all calendar events ")
-                //.append("\n/refresh - refresh Google login token")
                 ;
         //todo /help COMMAND_NAME
-        //todo map commands from ControllerSingleton
+        // todo: map commands from ControllerSingleton (just add command description to annotation)
         response.setText(responseBuilder.toString());
         return response;
     }

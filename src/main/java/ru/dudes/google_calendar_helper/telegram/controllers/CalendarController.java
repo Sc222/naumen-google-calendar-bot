@@ -85,8 +85,8 @@ public class CalendarController {
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
 
         String responseText;
-        if (user == null) //todo move to helper method
-            responseText = "You are not logged in.\nPlease type /login to login or service will not work";
+        if (user == null)
+            return ResponseHelper.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
         else {
             List<EventDto> events = googleService.getEvents(user.getToken(), calendarId);
 
@@ -116,7 +116,7 @@ public class CalendarController {
         var values = message.getText().split(" ");
         var response = new SendMessage();
         response.setChatId(String.valueOf(update.getMessage().getChatId()));
-        if (values.length != 2) {
+        if (values.length != 3) {
             response.setText("Wrong command format!\nPlease type /events %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
             return response;
         }

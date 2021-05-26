@@ -6,13 +6,13 @@ public class ControllersSingleton {
     private static final BotApiMethodContainer container = BotApiMethodContainer.getInstance();
 
     public static BotApiMethodController getController(Update update) {
-        String path;
+        var path = "";
         BotApiMethodController controller = null;
         if (update.hasMessage() && update.getMessage().hasText()) {
             path = update.getMessage().getText().split(" ")[0].trim();
             controller = container.getBotApiMethodController(path);
         } else if (update.hasCallbackQuery()) {
-            path = update.getCallbackQuery().getData().split("/")[1].trim();
+            path = update.getCallbackQuery().getData().split(" ")[0].trim();
             controller = container.getBotApiMethodController(path);
         }
         return controller != null ? controller : container.getBotApiMethodController("");

@@ -27,7 +27,7 @@ public class LoginSuccessController {
 
     @Autowired
     public LoginSuccessController(UserRepository userRepository, OAuth2AuthorizedClientService authorizedClientService, GoogleCalendarBot telegramBot) {
-        this.userRepository=userRepository;
+        this.userRepository = userRepository;
         this.authorizedClientService = authorizedClientService;
         this.telegramBot = telegramBot;
     }
@@ -36,27 +36,9 @@ public class LoginSuccessController {
     public String getLoginInfo(HttpSession session, OAuth2AuthenticationToken authentication) {
         var client = Auth2InfoHelper.loadClientInfo(authentication, authorizedClientService);
         var userInfo = Auth2InfoHelper.getUserInfo(client);
-
-        //TODO STORE USER DETAILS IN DATABASE
-
-        //client.getRefreshToken()
-        //Object a = authentication.getDetails();
-
-        String tgChatId = (String) session.getAttribute("chatId");
-        logger.info("GET FROM SESSION: " + tgChatId);
-
-
-        //OPTIONAL SAVE USER DETAILS SOMEWHERE HERE
-        //EXAMPLE VALUES:
-        //USER_NAME: userInfo.get("name");
-        //USER_EMAIL: userInfo.get("email");
-        //TOKEN_VALUE: client.getAccessToken().getTokenValue();
-        logger.info("ACCESS_TOKEN VALUE: " + client.getAccessToken().getTokenValue());
-        //System.out.println("REFRESH_TOKEN VALUE: " + client.getRefreshToken().getTokenValue());
+        var tgChatId = (String) session.getAttribute("chatId");
+        logger.info("Success login for telegram chat: " + tgChatId);
         logger.info(userInfo.toString());
-
-        //client.getRefreshToken().getTokenValue()
-
         var newUser = new User(
                 authentication.getAuthorizedClientRegistrationId(),
                 authentication.getName(),
@@ -64,17 +46,16 @@ public class LoginSuccessController {
                 client.getAccessToken().getTokenValue(),
                 userInfo);
         var dbUser = userRepository.findByChatId(tgChatId);
-
-        if (dbUser != null) { // perform save on user from db (BECAUSE IT SHOULD CONTAIN ID)
+        if (dbUser != null) { // save dbUser because user to update should have database ID
             dbUser.updateWithValues(newUser.getChatId(), newUser.getToken(), newUser.getUserName());
             userRepository.save(dbUser);
         } else
             userRepository.save(newUser);
 
-        //send telegram message
-        SendMessage sendMessage = new SendMessage();
+        // send telegram message
+        var sendMessage = new SendMessage();
         sendMessage.setChatId(tgChatId);
-        sendMessage.setText("Successfully logged in as: " + userInfo.getName());
+        sendMessage.setText("Successfully logged in as:\n" + userInfo.getName());
         try {
             telegramBot.sendMessageFromController(sendMessage);
         } catch (TelegramApiException e) {

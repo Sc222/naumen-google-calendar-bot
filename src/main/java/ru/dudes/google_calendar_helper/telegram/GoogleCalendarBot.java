@@ -40,10 +40,10 @@ public class GoogleCalendarBot extends TelegramLongPollingBot {
         methods.forEach(method -> {
             try {
                 execute(method);
-                logger.info("Sent message to {}", update.getMessage().getChatId());
+                logger.info("Sent message to user");
             } catch (TelegramApiException e) {
                 e.printStackTrace();
-                logger.error("Failed to send message to {} due to error: {}", update.getMessage().getChatId(), e.getMessage());
+                logger.error("Failed to send message due to error: {}", e.getMessage());
             }
         });
     }

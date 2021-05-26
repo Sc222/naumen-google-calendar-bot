@@ -8,14 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
-/*@Data
-public class User {
-
-    private String chatId;
-    private String summary;
-    private String description;
-}*/
-
 @Entity
 public class User {
 
@@ -77,7 +69,7 @@ public class User {
     @Override
     public String toString() {
         return String.format(
-                "Customer[id=%d, chatId='%s', token='%s',userName='%s']",
+                "User[id=%d, chatId='%s', token='%s',userName='%s']",
                 id, chatId, token, userName);
     }
 

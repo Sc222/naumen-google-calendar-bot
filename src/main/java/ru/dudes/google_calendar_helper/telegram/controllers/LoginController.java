@@ -11,10 +11,9 @@ import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMappi
 @BotController
 public class LoginController {
 
+    private final UserRepository userRepository;
     @Value("${loginURL}")
     private String homepage;
-
-    private final UserRepository userRepository;
 
     @Autowired
     public LoginController(UserRepository userRepository) {
@@ -26,20 +25,27 @@ public class LoginController {
         var message = update.getMessage();
         var response = new SendMessage();
         response.setChatId(String.valueOf(message.getChatId()));
-
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
-
-        String responseText;
-        if (user != null)  //todo move to helper method
-            responseText = "You are already logged in.\nPlease type /logout and than /login again if you want to login with different account.";
-        else {
-            var loginUrl = String.format("Login url:\n%s?chatId=%d", homepage, update.getMessage().getChatId());
-            //!!!localhost links don't highlight
-            //todo: format text as Please follow the link below to login
-            responseText = loginUrl;
+        if (user != null) {
+            response.setText("You are already logged in.\nPlease type /logout and than /login again if you want to login with different account.");
+            return response;
+        } else {
+            var url = homepage + "?chatId=" + message.getChatId();
+            response.setText("Your login url:\n" + url);
+            /* TODO normal buttons + buttonControllers on production build
+            if (homepage.startsWith("http://localhost")){ //localhost links are not valid links for telegram
+                response.setText("Your login url:\n"+url);
+            }
+            else {
+                response.setText("Tap the button to open browser and login:");
+                var button = ResponseHelper.createKeyboardButton("Login", "/callback-login", url);
+                var keyboard = List.of(List.of(button));
+                var replyMarkup = new InlineKeyboardMarkup();
+                replyMarkup.setKeyboard(keyboard);
+                response.setReplyMarkup(replyMarkup);
+            }
+            */
         }
-        response.setText(responseText);
-
         return response;
     }
 }
