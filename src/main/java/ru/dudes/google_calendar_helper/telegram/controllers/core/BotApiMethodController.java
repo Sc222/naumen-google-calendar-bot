@@ -25,7 +25,8 @@ public abstract class BotApiMethodController {
         processUpdate = typeListReturnDetect() ? this::processList : this::processSingle;
     }
 
-    public boolean successUpdatePredicate(Update update){
+    public boolean successUpdatePredicate(Update update)
+    {
         return true;
     }
 

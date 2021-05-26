@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
-import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.services.google_entities.CalendarDto;
 import ru.dudes.google_calendar_helper.services.google_entities.EventDto;
+import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
 
@@ -46,10 +46,10 @@ public class CalendarController {
             }
 
             //todo  move to helper method
-            if(calendars==null)
-                responseText = "There was a error getting your calendars.\nTry /login command.";
-            else{
-                responseText="Your calendars:\n";
+            if (calendars == null)
+                responseText = "There was a error getting your calendars.\nTry /login or /refresh_token commands.";
+            else {
+                responseText = "Your calendars:\n";
                 StringJoiner calendarsJoiner = new StringJoiner("\n");
                 for (int i = 0; i < calendars.size(); i++) {
                     CalendarDto c = calendars.get(i);
@@ -102,6 +102,27 @@ public class CalendarController {
             }
         }
         response.setText(responseText);
+        return response;
+    }
+
+    @BotRequestMapping(value = "/notify")
+    public SendMessage NotifyEvent(Update update) {
+        var message = update.getMessage();
+        var values = message.getText().split(" ");
+        var response = new SendMessage();
+        if (values.length != 2) {
+            response.setText("Wrong command format!\nPlease type /events %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
+            return response;
+        }
+        var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
+        var calendarId = values[1];
+        var eventId = values[2];
+        var event = googleService.getEvent(calendarId,eventId, user.getToken());
+        if(event == null) {
+            response.setText("There was a error getting your calendar events.\nCheck command arguments or try /login or /refresh_token commands.");
+        }
+        var notification = new Notification(message.getChatId(),new  Date(event.getStartDateTime().getValue()), calendarId, eventId);
+        response.setText("Success");
         return response;
     }
 }

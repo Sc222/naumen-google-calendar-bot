@@ -9,6 +9,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
+import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,28 @@ public class GoogleService {
 
     //TODO UPDATE CALENDAR AND SOMETHING ELSE HERE
 
+    public EventDto getEvent(String calendarId, String eventId, String token){
+        var credential = new GoogleCredential().setAccessToken(token);
+        var calendar =
+                new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
+                        .setApplicationName(APPLICATION_NAME)
+                        .build();
+
+        Event event = null;
+        try{
+            event = calendar.events().get(calendarId, eventId).execute();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+        if(event == null)
+            return null;
+
+        var eventDto = new EventDto();
+        BeanUtils.copyProperties(event, eventDto);
+        eventDto.setStartDateTime(event.getStart().getDateTime());
+        return eventDto;
+    }
 
     //TODO GET EVENTS WORKS BAD
     public List<EventDto> getEvents(String tokenValue, String calendarId) {
