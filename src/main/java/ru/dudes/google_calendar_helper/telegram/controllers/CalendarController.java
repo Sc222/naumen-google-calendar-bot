@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.dudes.google_calendar_helper.db.entities.Notification;
+import ru.dudes.google_calendar_helper.db.repositories.NotifyRepository;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.services.google_entities.CalendarDto;
@@ -20,11 +21,13 @@ import java.util.StringJoiner;
 public class CalendarController {
 
     private final UserRepository userRepository;
+    private final NotifyRepository notifyRepository;
     private final GoogleService googleService;
 
     @Autowired
-    public CalendarController(UserRepository userRepository, GoogleService googleService) {
+    public CalendarController(UserRepository userRepository, NotifyRepository notifyRepository, GoogleService googleService) {
         this.userRepository = userRepository;
+        this.notifyRepository = notifyRepository;
         this.googleService = googleService;
     }
 
@@ -112,6 +115,7 @@ public class CalendarController {
         var message = update.getMessage();
         var values = message.getText().split(" ");
         var response = new SendMessage();
+        response.setChatId(String.valueOf(update.getMessage().getChatId()));
         if (values.length != 2) {
             response.setText("Wrong command format!\nPlease type /events %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
             return response;
@@ -121,10 +125,14 @@ public class CalendarController {
         var eventId = values[2];
         var event = googleService.getEvent(calendarId, eventId, user.getToken());
         if (event == null) {
-            response.setText("There was a error getting your calendar events.\nCheck command arguments or try /login or /refresh_token commands.");
+            response.setText("There was a error getting your calendar events.\nCheck command arguments or try /login command.");
+            return response;
         }
+
         var notification = new Notification(message.getChatId(), new Date(event.getStartDateTime().getValue()), calendarId, eventId);
-        response.setText("Success");
+        notifyRepository.save(notification);
+
+        response.setText("Success adding notification");
         return response;
     }
 }
