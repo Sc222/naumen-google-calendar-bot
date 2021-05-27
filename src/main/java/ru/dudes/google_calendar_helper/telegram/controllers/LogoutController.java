@@ -21,7 +21,7 @@ public class LogoutController {
         this.userRepository = userRepository;
     }
 
-    private SendMessage logout(String chatId) {
+    private SendMessage processLogout(String chatId) {
         var response = new SendMessage();
         response.setChatId(chatId);
         var user = userRepository.findByChatId(chatId);
@@ -38,12 +38,12 @@ public class LogoutController {
     // button callback request
     @BotRequestMapping(value = "/callback-logout", method = BotRequestMethod.EDIT)
     public SendMessage processLogoutButton(Update update) {
-        return logout(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
+        return processLogout(String.valueOf(update.getCallbackQuery().getMessage().getChatId()));
     }
 
     //text request
     @BotRequestMapping(value = "/logout")
     public SendMessage processLogoutCommand(Update update) {
-        return logout(String.valueOf(update.getMessage().getChatId()));
+        return processLogout(String.valueOf(update.getMessage().getChatId()));
     }
 }

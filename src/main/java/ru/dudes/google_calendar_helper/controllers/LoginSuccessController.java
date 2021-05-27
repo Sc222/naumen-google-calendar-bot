@@ -8,14 +8,17 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dudes.google_calendar_helper.auth2.Auth2InfoHelper;
 import ru.dudes.google_calendar_helper.db.entities.User;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.telegram.GoogleCalendarBot;
+import ru.dudes.google_calendar_helper.telegram.controllers.ResponseHelper;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotApiMethodContainer;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 public class LoginSuccessController {
@@ -53,11 +56,17 @@ public class LoginSuccessController {
             userRepository.save(newUser);
 
         // send telegram message
-        var sendMessage = new SendMessage();
-        sendMessage.setChatId(tgChatId);
-        sendMessage.setText("Successfully logged in as:\n" + userInfo.getName());
+        var tgResponse = new SendMessage();
+        tgResponse.setChatId(tgChatId);
+        tgResponse.setText("Successfully logged in as:\n" + userInfo.getName());
+        var calendarButton = ResponseHelper.createKeyboardButton("Calendars", "/callback-calendars");
+        var otherButton = ResponseHelper.createKeyboardButton("Help", "/callback-help");
+        var keyboard = List.of(List.of(calendarButton, otherButton));
+        var replyMarkup = new InlineKeyboardMarkup();
+        replyMarkup.setKeyboard(keyboard);
+        tgResponse.setReplyMarkup(replyMarkup);
         try {
-            telegramBot.sendMessageFromController(sendMessage);
+            telegramBot.sendMessageFromController(tgResponse);
         } catch (TelegramApiException e) {
             e.printStackTrace();
             logger.error("Can't send telegram message after success login");
