@@ -8,6 +8,7 @@ import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMethod;
+import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 
 @BotController
 public class LogoutController {
@@ -26,7 +27,7 @@ public class LogoutController {
         response.setChatId(chatId);
         var user = userRepository.findByChatId(chatId);
         if (user == null)
-            return ResponseHelper.generateNotLoggedInResponse(chatId);
+            return ResponseUtils.generateNotLoggedInResponse(chatId);
         else {
             authorizedClientService.removeAuthorizedClient(user.getOAuthRegistrationId(), user.getOAuthName());
             userRepository.deleteById(user.getId());

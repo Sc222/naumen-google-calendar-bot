@@ -14,8 +14,8 @@ import ru.dudes.google_calendar_helper.auth2.Auth2InfoHelper;
 import ru.dudes.google_calendar_helper.db.entities.User;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.telegram.GoogleCalendarBot;
-import ru.dudes.google_calendar_helper.telegram.controllers.ResponseHelper;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotApiMethodContainer;
+import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -59,8 +59,8 @@ public class LoginSuccessController {
         var tgResponse = new SendMessage();
         tgResponse.setChatId(tgChatId);
         tgResponse.setText("Successfully logged in as:\n" + userInfo.getName());
-        var calendarButton = ResponseHelper.createKeyboardButton("Calendars", "/callback-calendars");
-        var otherButton = ResponseHelper.createKeyboardButton("Help", "/callback-help");
+        var calendarButton = ResponseUtils.createKeyboardButton("Calendars", "/callback-calendars 0");
+        var otherButton = ResponseUtils.createKeyboardButton("Help", "/callback-help");
         var keyboard = List.of(List.of(calendarButton, otherButton));
         var replyMarkup = new InlineKeyboardMarkup();
         replyMarkup.setKeyboard(keyboard);

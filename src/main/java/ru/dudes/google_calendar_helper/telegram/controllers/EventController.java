@@ -8,6 +8,7 @@ import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.services.google_entities.EventDto;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
+import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -43,7 +44,7 @@ public class EventController {
 
         String responseText;
         if (user == null)
-            return ResponseHelper.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
+            return ResponseUtils.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
         else {
             List<EventDto> events = googleService.getEvents(user.getToken(), calendarId);
 

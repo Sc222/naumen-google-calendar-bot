@@ -25,14 +25,15 @@ import java.util.List;
 @Service
 public class GoogleService {
 
-    private static final String APPLICATION_NAME = "Movie-Nights";
+
+    private static final String APPLICATION_NAME = "Calendar-bot";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final HttpTransport httpTransport = new NetHttpTransport();
     private final DateTime minDate = new DateTime(new Date());
 
     //TODO UPDATE CALENDAR AND SOMETHING ELSE HERE
 
-    public EventDto getEvent(String calendarId, String eventId, String token){
+    public EventDto getEvent(String calendarId, String eventId, String token) {
         var credential = new GoogleCredential().setAccessToken(token);
         var calendar =
                 new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
@@ -40,13 +41,13 @@ public class GoogleService {
                         .build();
 
         Event event = null;
-        try{
+        try {
             event = calendar.events().get(calendarId, eventId).execute();
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if(event == null)
+        if (event == null)
             return null;
 
         var eventDto = new EventDto();
@@ -108,6 +109,5 @@ public class GoogleService {
         } while (pageToken != null);
         return calendarDtos;
     }
-
 
 }

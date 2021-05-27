@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
+import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class StatusController {
         //todo use sendPhoto or markdown/html for better img formatting
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
         if (user == null)
-            return ResponseHelper.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
+            return ResponseUtils.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
         else {
             response.setText(
                     "Account information:" +
@@ -36,7 +37,7 @@ public class StatusController {
                             "\nEmail: " + user.getEmail() +
                             "\n" + user.getImageUrl()
             );
-            var button = ResponseHelper.createKeyboardButton("Logout", "/callback-logout");
+            var button = ResponseUtils.createKeyboardButton("Logout", "/callback-logout");
             var keyboard = List.of(List.of(button));
             var replyMarkup = new InlineKeyboardMarkup();
             replyMarkup.setKeyboard(keyboard);
