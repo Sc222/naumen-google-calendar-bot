@@ -32,8 +32,7 @@ public class NotifyController {
     @BotRequestMapping(value = "/callback-notify", method = BotRequestMethod.EDIT)
     public SendMessage NotifyEventButton(Update update) {
         //todo remove mock
-        return ResponseUtils.createSendMessage(String.valueOf(update.getMessage().getChatId()), "Notification has been set up");
-
+        return ResponseUtils.createSendMessage(String.valueOf(update.getCallbackQuery().getMessage().getChatId()), "Notification has been set up");
     }
 
     @BotRequestMapping(value = "/notify")
@@ -44,7 +43,7 @@ public class NotifyController {
         response.setChatId(String.valueOf(update.getMessage().getChatId()));
 
         if (values.length != 3) {
-            response.setText("Wrong command format!\nPlease type /events %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
+            response.setText("Wrong command format!\nPlease type /notify %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
             return response;
         }
         var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
