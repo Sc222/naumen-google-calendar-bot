@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dudes.google_calendar_helper.auth2.Auth2InfoHelper;
 import ru.dudes.google_calendar_helper.db.entities.User;
@@ -59,11 +58,7 @@ public class LoginSuccessController {
         var tgResponse = new SendMessage();
         tgResponse.setChatId(tgChatId);
         tgResponse.setText("Successfully logged in as:\n" + userInfo.getName());
-        var calendarButton = ResponseUtils.createKeyboardButton("Calendars", "/callback-calendars 0");
-        var otherButton = ResponseUtils.createKeyboardButton("Help", "/callback-help");
-        var keyboard = List.of(List.of(calendarButton, otherButton));
-        var replyMarkup = new InlineKeyboardMarkup();
-        replyMarkup.setKeyboard(keyboard);
+        var replyMarkup = ResponseUtils.createKeyboardMarkupFromRows(List.of(ResponseUtils.createCalendarsAndHelpRow()));
         tgResponse.setReplyMarkup(replyMarkup);
         try {
             telegramBot.sendMessageFromController(tgResponse);

@@ -15,8 +15,10 @@ import ru.dudes.google_calendar_helper.telegram.utils.ButtonEntry;
 import ru.dudes.google_calendar_helper.telegram.utils.InputUtils;
 import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 import ru.dudes.google_calendar_helper.utils.GoogleServiceUtils;
+import ru.dudes.google_calendar_helper.utils.TimeUtils;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -65,12 +67,12 @@ public class CalendarController {
 
         //todo calendars to string helper method
         String responseText;
-        responseText = String.format("Page: %d/%d\n", currentPage + 1, pagesCount);
-        responseText += "Calendars:\n";
-        StringJoiner calendarsJoiner = new StringJoiner("\n");
+        responseText = String.format("Page: %d/%d\n\n", currentPage + 1, pagesCount);
+        responseText += "Calendars:\n\n";
+        StringJoiner calendarsJoiner = new StringJoiner("\n\n");
         for (int i = 0; i < calendars.size(); i++) {
             CalendarDto c = calendars.get(i);
-            String s = String.format("%d. %s\n%s", i + 1, i == 0 ? "Primary" : "Secondary", c.toString());
+            String s = String.format("%d.\n%s", i + 1, c.toString());
             calendarsJoiner.add(s);
         }
         responseText += calendarsJoiner.toString();
@@ -100,15 +102,15 @@ public class CalendarController {
         }
         if (calendar == null)
             return ResponseUtils.createSendMessage(chatId, "There was a error getting your calendar.\nTry setting smaller index or try logging out and in again\nType /help for more info");
-        var responseText = "Selected Calendar:\n" + String.format("%s\n%s", calendarIndex == 0 ? "Primary" : "Secondary", calendar.toString());
+        var responseText = "Calendar: " + calendar.getId() + "\n" + calendar.toString();
         var buttonsRow = ResponseUtils.createEntriesButtonRow(List.of(
-                new ButtonEntry("Events", "/help") //todo /events calendarID
+                // calendar id is taken from message
+                new ButtonEntry("Events", "/callback-events " + TimeUtils.DATE_FORMAT_SHORT.format(new Date(System.currentTimeMillis())))
         ));
         if (messageId != null) {
             var backPageIndex = InputUtils.getArgumentsSecondString(commandText);
             if (backPageIndex == null)
                 return ResponseUtils.createSendMessage(chatId, "Wrong command format!\nPlease type /calendar %index");
-
             // back button
             buttonsRow.add(0, ResponseUtils.createKeyboardButton("Back", "/callback-calendars " + backPageIndex));
             var keyboardMarkup = ResponseUtils.createKeyboardMarkupFromRows(List.of(buttonsRow));

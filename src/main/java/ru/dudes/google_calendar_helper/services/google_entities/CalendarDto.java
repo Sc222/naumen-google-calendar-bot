@@ -22,9 +22,9 @@ public class CalendarDto {
 
     @Override
     public String toString() {
-        var result = String.format("  Id: %s\n  Summary: %s", id, summary);
+        var result = String.format("Id: %s\nSummary: %s", id, summary);
         if (description != null)
-            result += "\n  Description: " + description;
+            result += "\nDescription: " + description;
         return result;
     }
 }

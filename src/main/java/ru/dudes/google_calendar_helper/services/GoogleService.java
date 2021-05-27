@@ -15,6 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.dudes.google_calendar_helper.services.google_entities.CalendarDto;
 import ru.dudes.google_calendar_helper.services.google_entities.EventDto;
+import ru.dudes.google_calendar_helper.utils.GoogleServiceUtils;
+import ru.dudes.google_calendar_helper.utils.TimeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class GoogleService {
 
     //TODO UPDATE CALENDAR AND SOMETHING ELSE HERE
 
+    //todo fix
     public EventDto getEvent(String calendarId, String eventId, String token) {
         var credential = new GoogleCredential().setAccessToken(token);
         var calendar =
@@ -57,37 +60,56 @@ public class GoogleService {
     }
 
     //TODO GET EVENTS WORKS BAD
-    public List<EventDto> getEvents(String tokenValue, String calendarId) {
+    public List<EventDto> getEvents(String tokenValue, String calendarId, Date currentDate) throws IOException {
         var credential = new GoogleCredential().setAccessToken(tokenValue);
         var calendar =
                 new Calendar.Builder(httpTransport, JSON_FACTORY, credential)
                         .setApplicationName(APPLICATION_NAME)
                         .build();
-        Events events = null;
-        try {
-            events = calendar.events().list(calendarId)
-                    .setMaxResults(50)
-                    .setTimeMin(minDate)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        var startDate = TimeUtils.getDayStart(currentDate);
+        var endDate = TimeUtils.getDayEnd(currentDate);
 
-        if (events == null)
-            return null;
+
+        Events events = calendar.events().list(calendarId)
+                .setMaxResults(GoogleServiceUtils.MAX_EVENT_RESULTS)
+                .setTimeMin(new DateTime(startDate.getTime()))
+                .setTimeMax(new DateTime(endDate.getTime()))
+                .setOrderBy("startTime")
+                .setSingleEvents(true)
+                .execute();
 
         var eventDtos = new ArrayList<EventDto>();
         events.getItems().forEach(e -> {
             EventDto eventDto = new EventDto();
             BeanUtils.copyProperties(e, eventDto);
-
-            //todo null if not logged in
             eventDto.setStartTime(e.getStart().getDateTime().toString());
+            eventDto.setEndTime(e.getEnd().getDateTime().toString());
             eventDtos.add(eventDto);
         });
         return eventDtos;
+        // f (items.isEmpty()) {
+        //    return new ArrayList<>();
+        //  else {
+        //    System.out.println("Upcoming events");
+        //    for (Event event : items) {
+        //        DateTime start = event.getStart().getDateTime();
+        //        if (start == null) {
+        //            start = event.getStart().getDate();
+        //        }
+        //        System.out.printf("%s (%s)\n", event.getSummary(), start);
+        //    }
+        //
+
+
+       /* var eventDtos = new ArrayList<EventDto>();
+        events.getItems().forEach(e -> {
+            EventDto eventDto = new EventDto();
+            BeanUtils.copyProperties(e, eventDto);
+
+            eventDto.setStartTime(e.getStart().getDateTime().toString());
+            eventDtos.add(eventDto);
+        });
+        return eventDtos;*/
     }
 
     public CalendarDto getCalendarByIndex(String tokenValue, int index) throws IOException {

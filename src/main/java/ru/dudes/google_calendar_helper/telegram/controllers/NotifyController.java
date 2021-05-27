@@ -9,6 +9,8 @@ import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
 import ru.dudes.google_calendar_helper.services.GoogleService;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotController;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMapping;
+import ru.dudes.google_calendar_helper.telegram.controllers.core.BotRequestMethod;
+import ru.dudes.google_calendar_helper.telegram.utils.ResponseUtils;
 
 import java.util.Date;
 
@@ -27,12 +29,20 @@ public class NotifyController {
         this.googleService = googleService;
     }
 
+    @BotRequestMapping(value = "/callback-notify", method = BotRequestMethod.EDIT)
+    public SendMessage NotifyEventButton(Update update) {
+        //todo remove mock
+        return ResponseUtils.createSendMessage(String.valueOf(update.getMessage().getChatId()), "Notification has been set up");
+
+    }
+
     @BotRequestMapping(value = "/notify")
     public SendMessage NotifyEvent(Update update) {
         var message = update.getMessage();
         var values = message.getText().split(" ");
         var response = new SendMessage();
         response.setChatId(String.valueOf(update.getMessage().getChatId()));
+
         if (values.length != 3) {
             response.setText("Wrong command format!\nPlease type /events %calendarID %eventId\nCalendar ID's can be listed using /calendars .");
             return response;
