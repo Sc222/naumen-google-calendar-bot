@@ -55,6 +55,14 @@ public class ResponseUtils {
         return button;
     }
 
+    public static InlineKeyboardButton createKeyboardButton(String text, String callbackData, String url) {
+        var button = new InlineKeyboardButton();
+        button.setText(text);
+        button.setCallbackData(callbackData);
+        button.setUrl(url);
+        return button;
+    }
+
     public static List<InlineKeyboardButton> createCalendarsAndHelpRow() {
         var calendarButton = ResponseUtils.createKeyboardButton("Calendars", "/callback-calendars 0");
         var otherButton = ResponseUtils.createKeyboardButton("Help", "/callback-help");
