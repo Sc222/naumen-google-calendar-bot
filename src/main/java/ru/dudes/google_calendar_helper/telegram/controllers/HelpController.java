@@ -16,9 +16,10 @@ public class HelpController {
                 .append("\n\nAccount:")
                 .append("\n/login - login into Google to enable integration")
                 .append("\n/logout - logout from Google to disable integration")
-                .append("\n/status - shows Google login status")
+                .append("\n/status - show Google login status")
                 .append("\n\nGet Data:")
                 .append("\n/calendars - list all calendars")
+                .append("\n/calendar %id - show calendar info")
                 .append("\n/events %calendarId %interval - list all calendar events")
                 .append("\n\nSetup Notifications:")
                 .append("\n/notify %calendarId %eventId - setup event notification");

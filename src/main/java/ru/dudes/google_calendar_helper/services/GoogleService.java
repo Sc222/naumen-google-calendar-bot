@@ -90,6 +90,10 @@ public class GoogleService {
         return eventDtos;
     }
 
+    public CalendarDto getCalendarByIndex(String tokenValue, int index) throws IOException {
+        return getCalendars(tokenValue).get(index);
+    }
+
     public List<CalendarDto> getCalendars(String tokenValue) throws IOException {
         var credential = new GoogleCredential().setAccessToken(tokenValue);
         var service = new Calendar.Builder(httpTransport, JSON_FACTORY, credential)

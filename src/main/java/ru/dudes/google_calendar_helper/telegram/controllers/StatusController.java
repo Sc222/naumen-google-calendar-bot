@@ -1,7 +1,10 @@
 package ru.dudes.google_calendar_helper.telegram.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.dudes.google_calendar_helper.db.repositories.UserRepository;
@@ -22,27 +25,24 @@ public class StatusController {
     }
 
     @BotRequestMapping(value = "/status")
-    public SendMessage processStatusCommand(Update update) {
-        var message = update.getMessage();
-        var response = new SendMessage();
-        response.setChatId(String.valueOf(message.getChatId()));
-        //todo use sendPhoto or markdown/html for better img formatting
-        var user = userRepository.findByChatId(String.valueOf(message.getChatId()));
+    public PartialBotApiMethod<Message> processStatusCommand(Update update) {
+        var chatId = String.valueOf(update.getMessage().getChatId());
+        var user = userRepository.findByChatId(chatId);
         if (user == null)
-            return ResponseUtils.generateNotLoggedInResponse(String.valueOf(message.getChatId()));
-        else {
-            response.setText(
-                    "Account information:" +
-                            "\nUsername: " + user.getUserName() +
-                            "\nEmail: " + user.getEmail() +
-                            "\n" + user.getImageUrl()
-            );
-            var button = ResponseUtils.createKeyboardButton("Logout", "/callback-logout");
-            var keyboard = List.of(List.of(button));
-            var replyMarkup = new InlineKeyboardMarkup();
-            replyMarkup.setKeyboard(keyboard);
-            response.setReplyMarkup(replyMarkup);
-        }
+            return ResponseUtils.generateNotLoggedInResponse(chatId);
+        var response = new SendPhoto();
+        response.setChatId(chatId);
+        response.setPhoto(new InputFile(user.getImageUrl()));
+        response.setCaption(
+                "Account information:" +
+                        "\nUsername: " + user.getUserName() +
+                        "\nEmail: " + user.getEmail()
+        );
+        var button = ResponseUtils.createKeyboardButton("Logout", "/callback-logout");
+        var keyboard = List.of(List.of(button));
+        var replyMarkup = new InlineKeyboardMarkup();
+        replyMarkup.setKeyboard(keyboard);
+        response.setReplyMarkup(replyMarkup);
         return response;
     }
 }

@@ -2,7 +2,7 @@ package ru.dudes.google_calendar_helper.telegram.controllers.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,8 +27,8 @@ public abstract class BotApiMethodController {
 
     public abstract boolean successUpdatePredicate(Update update);
 
-    public List<BotApiMethod> process(Update update) {
-        if(!successUpdatePredicate(update)) return null;
+    public List<PartialBotApiMethod> process(Update update) {
+        if (!successUpdatePredicate(update)) return null;
         try {
             return processUpdate.accept(update);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -41,17 +41,17 @@ public abstract class BotApiMethodController {
         return List.class.equals(method.getReturnType());
     }
 
-    private List<BotApiMethod> processSingle(Update update) throws InvocationTargetException, IllegalAccessException {
-        var botApiMethod = (BotApiMethod) method.invoke(bean, update);
+    private List<PartialBotApiMethod> processSingle(Update update) throws InvocationTargetException, IllegalAccessException {
+        var botApiMethod = (PartialBotApiMethod) method.invoke(bean, update);
         return botApiMethod != null ? Collections.singletonList(botApiMethod) : new ArrayList<>(0);
     }
 
-    private List<BotApiMethod> processList(Update update) throws InvocationTargetException, IllegalAccessException {
-        var botApiMethods = (List<BotApiMethod>) method.invoke(bean, update);
+    private List<PartialBotApiMethod> processList(Update update) throws InvocationTargetException, IllegalAccessException {
+        var botApiMethods = (List<PartialBotApiMethod>) method.invoke(bean, update);
         return botApiMethods != null ? botApiMethods : new ArrayList<>(0);
     }
 
-    private interface Process{
-        List<BotApiMethod> accept(Update update) throws InvocationTargetException, IllegalAccessException;
+    private interface Process {
+        List<PartialBotApiMethod> accept(Update update) throws InvocationTargetException, IllegalAccessException;
     }
 }

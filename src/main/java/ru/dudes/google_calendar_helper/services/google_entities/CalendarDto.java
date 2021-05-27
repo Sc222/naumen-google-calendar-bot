@@ -1,22 +1,24 @@
 package ru.dudes.google_calendar_helper.services.google_entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import ru.dudes.google_calendar_helper.telegram.utils.ButtonEntry;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+@Data
 public class CalendarDto {
 
-    @Getter
-    @Setter
     private String id;
-
-    @Getter
-    @Setter
     private String summary;
-
-    @Getter
-    @Setter
     private String description;
+
+    public static List<ButtonEntry> toButtonEntries(List<CalendarDto> calendars, int indexShift, int backPageIndex) {
+        return IntStream.range(0, calendars.size()) //calendar id makes value out of tg bounds
+                .mapToObj(i -> new ButtonEntry(String.valueOf(i + 1), "/callback-calendar " + (indexShift + i) + " " + backPageIndex))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public String toString() {

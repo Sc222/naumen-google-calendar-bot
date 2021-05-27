@@ -7,8 +7,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResponseUtils {
+
+
     public static final String NOT_LOGGED_IN = "You are not logged in.\nPlease type /login to login or service will not work";
 
     public static SendMessage generateNotLoggedInResponse(String chatId) {
@@ -50,25 +53,26 @@ public class ResponseUtils {
         return button;
     }
 
-    public static InlineKeyboardButton createKeyboardButton(String text, String callbackData, String url) {
-        var button = new InlineKeyboardButton();
-        button.setText(text);
-        button.setCallbackData(callbackData);
-        button.setUrl(url);
-        return button;
-    }
-
-    public static InlineKeyboardMarkup createPaginationButtons(String callbackUrl, int currentPage, int pagesCount) {
+    public static List<InlineKeyboardButton> createPaginationButtonRow(String callbackUrl, int currentPage, int pagesCount) {
         var previousButton = ResponseUtils.createKeyboardButton("Previous", callbackUrl + " " + (currentPage - 1));
         var nextButton = ResponseUtils.createKeyboardButton("Next", callbackUrl + " " + (currentPage + 1));
-        List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
         if (currentPage > 0)
-            keyboardRow.add(previousButton);
+            row.add(previousButton);
         if (currentPage < pagesCount - 1)
-            keyboardRow.add(nextButton);
-        var keyboard = List.of(keyboardRow);
+            row.add(nextButton);
+        return row;
+    }
+
+    public static List<InlineKeyboardButton> createEntriesButtonRow(List<ButtonEntry> entries) {
+        return entries.stream()
+                .map(entry -> createKeyboardButton(entry.getText(), entry.getCallbackData()))
+                .collect(Collectors.toList());
+    }
+
+    public static InlineKeyboardMarkup createKeyboardMarkupFromRows(List<List<InlineKeyboardButton>> rows) {
         var replyMarkup = new InlineKeyboardMarkup();
-        replyMarkup.setKeyboard(keyboard);
+        replyMarkup.setKeyboard(rows);
         return replyMarkup;
     }
 }

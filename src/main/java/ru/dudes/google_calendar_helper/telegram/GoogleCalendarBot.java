@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.dudes.google_calendar_helper.telegram.controllers.core.ControllersSingleton;
@@ -39,7 +41,17 @@ public class GoogleCalendarBot extends TelegramLongPollingBot {
         var methods = controller.process(update);
         methods.forEach(method -> {
             try {
-                execute(method);
+                if (method instanceof SendMessage) {
+                    execute((SendMessage) method);
+                }
+                if (method instanceof EditMessageText) {
+                    execute((EditMessageText) method);
+                }
+                if (method instanceof SendPhoto) {
+                    execute((SendPhoto) method);
+                }
+                //todo SWITCH ALL METHOD TYPES HERE
+
                 logger.info("Sent message to user");
             } catch (TelegramApiException e) {
                 e.printStackTrace();

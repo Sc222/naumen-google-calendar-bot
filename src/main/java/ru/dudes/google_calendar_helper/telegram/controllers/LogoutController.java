@@ -23,16 +23,14 @@ public class LogoutController {
     }
 
     private SendMessage processLogout(String chatId) {
-        var response = new SendMessage();
-        response.setChatId(chatId);
         var user = userRepository.findByChatId(chatId);
         if (user == null)
             return ResponseUtils.generateNotLoggedInResponse(chatId);
-        else {
-            authorizedClientService.removeAuthorizedClient(user.getOAuthRegistrationId(), user.getOAuthName());
-            userRepository.deleteById(user.getId());
-            response.setText("Logged out successfully.");
-        }
+        var response = new SendMessage();
+        response.setChatId(chatId);
+        authorizedClientService.removeAuthorizedClient(user.getOAuthRegistrationId(), user.getOAuthName());
+        userRepository.deleteById(user.getId());
+        response.setText("Logged out successfully.");
         return response;
     }
 
