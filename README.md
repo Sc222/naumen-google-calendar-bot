@@ -2,6 +2,6 @@
 Telegram bot that can interact with your Google Calendar
 
 ## TODO: 
-[] more google calendar functionality
-[] extract controllers library
-[] add better readme
+[ ] more google calendar functionality
+[ ] extract controllers library
+[ ] add better readme
